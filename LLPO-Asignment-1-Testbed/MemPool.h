@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Tracker.h"
+#include "Global.h"
 #include "Common.h"
 
 using namespace std;

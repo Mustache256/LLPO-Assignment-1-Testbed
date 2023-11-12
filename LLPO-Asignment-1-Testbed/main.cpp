@@ -7,6 +7,6 @@ int main()
 {
 	MemPool* pool = new MemPool(50, 50);
 
-	delete pool;
+	pool->DeletePool();
 	return 0;
 }

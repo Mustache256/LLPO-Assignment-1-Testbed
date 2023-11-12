@@ -6,7 +6,7 @@ MemPool::MemPool(size_t sizeOfSlice, int numOfSlices)
 	mNumOfSlices = numOfSlices;
 	mSizeOfSlice = sizeOfSlice;
 
-	pMemStart = (char*)::operator new(mSizeOfSlice * mNumOfSlices);
+	pMemStart = (char*)::operator new(mSizeOfSlice * mNumOfSlices, Tracker::Type::pool);
 
 	mNumSlicesInitialised = 0;
 	mNumFreeSlices = numOfSlices;
@@ -72,7 +72,7 @@ void MemPool::Free(void* p)
 
 void MemPool::DeletePool()
 {
-	delete[] pMemStart;
+  MemPool::operator delete(pMemStart);
 	pMemStart = NULL;
 }
 
