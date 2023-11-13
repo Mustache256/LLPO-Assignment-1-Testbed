@@ -6,7 +6,7 @@ MemPool::MemPool(size_t sizeOfSlice, int numOfSlices)
 	mNumOfSlices = numOfSlices;
 	mSizeOfSlice = sizeOfSlice;
 
-	pMemStart = (char*)::operator new(mSizeOfSlice * mNumOfSlices, Tracker::Type::pool);
+	pMemStart = (char*)MemPool::operator new(mSizeOfSlice * mNumOfSlices);
 
 	mNumSlicesInitialised = 0;
 	mNumFreeSlices = numOfSlices;
@@ -54,7 +54,7 @@ void* MemPool::Alloc()
 	return ret;
 }
 
-void MemPool::Free(void* p)
+void MemPool::Dealloc(void* p)
 {
 	if (pNext != NULL)
 	{
@@ -113,6 +113,29 @@ void* MemPool::operator new(size_t size)
 	return pStartMemAlloced;
 }
 
+void* MemPool::operator new(size_t size, MemPool* pMemPool)
+{
+	cout << "\n-------------\n";
+	cout << "\nAllocating to Memory Pool...\n";
+	char* pMem = (char*)pMemPool->Alloc();
+
+	if (pMem == nullptr)
+	{
+		cout << "\nNo free slices avaiable in Memory Pool, allocating outside pool instead...\n";
+		return ::operator new(size);
+	}
+
+	if (size > pMemPool->mSizeOfSlice)
+	{
+		cerr << "\nCannot allocate to pool as object is larger than slice's size, allocating outside pool instead...\n";
+		return ::operator new(size);
+	}
+
+	cout << "\nAllocated " << size << " bytes to Memory Pool at address " << pMem << "\n";
+
+	return pMem;
+}
+
 void MemPool::operator delete(void* pMem)
 {
 	cout << "\n-------------\n";
@@ -147,4 +170,11 @@ void MemPool::operator delete(void* pMem)
 
 		free(pHeader);
 	}
+}
+
+void MemPool::operator delete(void* pMem, MemPool* pMemPool)
+{
+	cout << "\n-------------\n";
+	cout << "\nDe-Allocating from Memory Pool...\n";
+	pMemPool->Dealloc(pMem);
 }
