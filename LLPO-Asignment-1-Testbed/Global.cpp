@@ -104,7 +104,7 @@ void operator delete(void* pMem)
 	else
 	{
 		cout << "\nHeader " << pHeader << " checkValue correct, freeing memory...\n";
-		Tracker::RemoveBytesAlloced(sizeof(pHeader), pHeader);
+		Tracker::RemoveBytesAlloced(pHeader->size, pHeader);
 
 		free(pHeader);
 	}
